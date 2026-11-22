@@ -14,7 +14,11 @@ const Home = () => {
       >
         {/* learned a new thing suspense is used when we are loading a component. */}
         <Suspense fallback= {<Loader />}> 
-
+        <directionalLight />
+        <ambientLight />
+        <pointLight />
+        <spotLight />
+        <hemisphereLight />
         </Suspense>
 
       </Canvas>
