@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@react-three/fiber": "^9.8.2",
     "@tailwindcss/vite": "^4.3.5",
     "react-router-dom": "^7.18.6"
   },
