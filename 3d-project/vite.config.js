@@ -8,4 +8,7 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+  resolve: {
+    dedupe: ['react', 'react-dom'],  // this thing was the problem we  just tells vite to resolve react and reactdom to the same version and avoid duplicate instances of react in the project which was causing the error.
+  }
 })
