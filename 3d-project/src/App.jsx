@@ -1,10 +1,11 @@
+import {Route, BrowserRouter as Router, Routes} from "react-router-dom";
+
 //Creating the App Component.
-import React from "react";
 
 const App = () => {
   return (
     <div>
-      <h1 class="text-3xl font-bold underline">Hello world!</h1>
+      <h1 class="text-3xl font-bold underline text-red-500">Hello world!</h1>
     </div>
   );
 };
