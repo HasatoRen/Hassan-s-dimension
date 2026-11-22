@@ -1,4 +1,5 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import {Home, Contact, About, Projects} from "./pages";
 import Navbar from "./components/navbar";
 
 //Creating the App Component.
@@ -9,10 +10,10 @@ const App = () => {
       <Router>       
         <Navbar />
         <Routes>
-          <Route path="/" element = {"home"}/>
-          <Route path="/about" element = {"about"}/>
-          <Route path="/projects" element = {"projects"}/>
-          <Route path="/contact" element = {"contact"}/>
+          <Route path="/" element = {<Home />} />
+          <Route path="/about" element = {<About />} />
+          <Route path="/projects" element = {<Projects />} />
+          <Route path="/contact" element = {<Contact />} />
         </Routes>
       </Router>
     </main>
