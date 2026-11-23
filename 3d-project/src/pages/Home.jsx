@@ -5,6 +5,8 @@ import Loader from '../components/Loader'
 
 import Island from '../models/island'
 import Sky from '../models/sky'
+import Bird from '../models/bird'
+import Plane from '../models/Plane'
 
 {/* <div className = "absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
   testing if it workss
@@ -37,14 +39,17 @@ const Home = () => {
         <directionalLight position={[1, 1, 1]} intensity={2} />
         <ambientLight intensity={0.5} />
         <hemisphereLight skyColor="#b1e1ff" groundColor="000000" intensity={1} />
-
+       
+        <Bird />
         <Sky />
 
         <Island 
           position={islandPositon}
           scale={islandScale}
           rotation={islandRotation}
-        />        
+        />  
+
+        <Plane />      
         </Suspense>
 
       </Canvas>
