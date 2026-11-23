@@ -10,6 +10,11 @@ export default defineConfig({
   ],
   assetsInclude: ['**/*.glb'],
   resolve: {
-    dedupe: ['react', 'react-dom'],  // this thing was the problem we  just tells vite to resolve react and reactdom to the same version and avoid duplicate instances of react in the project which was causing the error.
+    dedupe: [
+      'react',
+      'react-dom',
+      'three',
+      '@react-three/fiber'
+    ],
   }
 })
