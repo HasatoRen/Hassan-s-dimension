@@ -8,12 +8,18 @@ const Plane = ({ isRotating, ...props }) => {
   const { scene, animations } = useGLTF(planeScene);
   const { actions } = useAnimations(animations, ref);
 
-  useEffect(() => {}, [actions, isRotating]);
-  if (isRotating) {
-    actions["Take 001"].play();
-  } else {
-    actions["Take 001"].stop();
-  }
+  useEffect(() => {
+    const animation = actions["Take 001"];
+    if (!animation) {
+      console.log("actions not found error",actions)
+    }
+    if (isRotating) {
+      animation.play();
+    } else {
+      animation.stop();
+    }
+  }, [actions, isRotating]);
+
   return (
     <mesh {...props} ref={ref}>
       <primitive object={scene} />
@@ -22,3 +28,6 @@ const Plane = ({ isRotating, ...props }) => {
 };
 
 export default Plane;
+
+
+// trying to do it from scratch and debugging

@@ -1,21 +1,20 @@
-import { Suspense, useState } from "react";
-import { Canvas } from "@react-three/fiber";
-import Loader from "../components/Loader";
+import { Suspense, useState } from 'react'
+import { Canvas } from '@react-three/fiber'
+import Loader from '../components/Loader'
 
-import Island from "../models/island";
-import Sky from "../models/sky";
-import Bird from "../models/bird";
-import Plane from "../models/Plane";
 
-{
-  /* <div className = "absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
+import Island from '../models/island'
+import Sky from '../models/sky'
+import Bird from '../models/bird'
+import Plane from '../models/Plane'
+
+{/* <div className = "absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
   testing if it workss
-</div> */
-}
+</div> */}
 const Home = () => {
-  const [currentStage, setCurrentStage] = useState(0);
-  const [isRotating, setisRotating] = useState(false);
-  // for adjusting island for screen size
+  const [ currentStage, setCurrentStage ] = useState(1)
+  const [isRotating, setisRotating] = useState(false)
+// for adjusting island for screen size
   const adjustIslandForScreenSize = () => {
     let screenScale = null;
     let screenPosition = [0, -6.5, -43];
@@ -27,67 +26,63 @@ const Home = () => {
       screenScale = [1, 1, 1];
     }
 
-    return [screenScale, screenPosition, rotation];
-  };
+    return [screenScale, screenPosition, rotation]
+  }
 
-  // for adjusting plane for screen size
+// for adjusting plane for screen size
   const adjustPlaneForScreenSize = () => {
-    let screenScale, screenPosition;
+    let screenScale , screenPosition;
 
     if (window.innerWidth < 768) {
       screenScale = [1.5, 1.5, 1.5];
-      screenPosition = [0, -1.5, 0];
+      screenPosition = [0, -1.5, 0]
     } else {
       screenScale = [3, 3, 3];
-      screenPosition = [0, -4, -4];
+      screenPosition = [0, -4, -4]
     }
 
-    return [screenScale, screenPosition];
-  };
+    return [screenScale, screenPosition]
+  }
 
-  const [islandScale, islandPositon, islandRotation] =
-    adjustIslandForScreenSize();
+  const [islandScale, islandPositon, islandRotation] = adjustIslandForScreenSize();
   const [planeScale, planePositon] = adjustPlaneForScreenSize();
 
   return (
-    <section className="w-full h-screen relative">
-      <Canvas
-        className={`w-full h-screen bg-transparent ${isRotating ? "cursor-grabbing" : "cursor-grab"}`}
-        camera={{ near: 0.1, far: 1000 }}
+    <section className = "w-full h-screen relative">
+      <Canvas 
+        className = {`w-full h-screen bg-transparent ${ isRotating ? 'cursor-grabbing' : 'cursor-grab'}`}
+        camera = {{ near: 0.1, far: 1000}}
       >
         {/* learned a new thing suspense is used when we are loading a component. */}
-        <Suspense fallback={<Loader />}>
-          <directionalLight position={[1, 1, 1]} intensity={2} />
-          <ambientLight intensity={0.5} />
-          <hemisphereLight
-            skyColor="#b1e1ff"
-            groundColor="000000"
-            intensity={1}
-          />
+        <Suspense fallback= {<Loader />}> 
+        <directionalLight position={[1, 1, 1]} intensity={2} />
+        <ambientLight intensity={0.5} />
+        <hemisphereLight skyColor="#b1e1ff" groundColor="000000" intensity={1} />
+       
+        <Bird />
+        <Sky />
 
-          <Bird />
-          <Sky />
+        <Island 
+          position={islandPositon}
+          scale={islandScale}
+          rotation={islandRotation}
+          isRotating={isRotating}
+          setisRotating={setisRotating}
+          setCurrentStage={setCurrentStage}
+          currentStage={currentStage}
+        />  
 
-          <Island
-            position={islandPositon}
-            scale={islandScale}
-            rotation={islandRotation}
-            isRotating={isRotating}
-            currentStage={currentStage}
-            setisRotating={setisRotating}
-            setCurrentStage={setCurrentStage}
-          />
-
-          <Plane
-            isRotating={isRotating}
-            planeScale={planeScale}
-            planePositon={planePositon}
-            rotation={[0, 20, 0]}
-          />
+        <Plane 
+          isRotating={isRotating}
+          planeScale = {planeScale}
+          planePositon = {planePositon}
+          rotation = {[0, 20, 0]}
+        />      
         </Suspense>
+
       </Canvas>
     </section>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
