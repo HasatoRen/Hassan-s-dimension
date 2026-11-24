@@ -106,6 +106,8 @@ const Island = ({ isRotating, setisRotating, setCurrentStage, ...props }) => {
       if (Math.abs(rotationSpeed.current) < 0.001) {
         rotationSpeed.current = 0;
       }
+      //storing the current rotation speed in island ref
+      islandRef.current.rotation.y += rotationSpeed.current;
     } else {
       //when rotating, detemine the current stage based on island orientation which is showing by island ref
       const rotation = islandRef.current.rotation.y;
