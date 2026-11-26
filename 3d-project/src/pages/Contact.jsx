@@ -6,12 +6,17 @@ import { Canvas } from "@react-three/fiber";
 
 import Fox from "../models/Fox";
 import Loader from "../components/Loader";
+import { Const } from "three/src/nodes/core/VarNode.js";
+import useAlert from "../hooks/usealert";
+import Alert from "../components/Alert";
 
 const Contact = () => {
   const formRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [currentAnimation, setCurrentAnimation] = useState("idle");
+
+  const { alert, showAlert, hideAlert } = useAlert();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -37,20 +42,27 @@ const Contact = () => {
       )
       .then(() => {
         setIsLoading(false);
-        //Todo show succes message
-        //Todo hide alert mesage
+        showAlert({
+          show: true,
+          text: "message Sent Succesfully!",
+          type: "success",
+        });
 
         setTimeout(() => {
-          setCurrentAnimation('idle')
+          hideAlert();
+          setCurrentAnimation("idle");
           setForm({ name: "", email: "", message: "" });
-        } ,[3000] )
-
+        }, [3000]);
       })
       .catch((error) => {
         setIsLoading(false);
         setCurrentAnimation("idle");
         console.log(error);
-        //todo show error message
+        showAlert({
+          show: true,
+          text: "I didn't receive your message!",
+          type: "danger",
+        });
       });
   };
 
@@ -59,6 +71,8 @@ const Contact = () => {
 
   return (
     <section className="relative flex lg:flex-row flex-col max-container">
+      {alert.show && <Alert {...alert} />}
+
       <div className="flex-1 min-w-[50%] flex flex-col">
         <h1 className="head-text">Get in Touch</h1>
 
@@ -108,11 +122,7 @@ const Contact = () => {
               onBlur={handleBlur}
             />
           </label>
-          <button
-            type="submit"
-            className="btn"
-            disabled={isLoading}
-          >
+          <button type="submit" className="btn" disabled={isLoading}>
             {isLoading ? "Sending..." : "Send Message"}
           </button>
         </form>
