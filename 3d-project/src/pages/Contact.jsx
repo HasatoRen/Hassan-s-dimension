@@ -108,8 +108,6 @@ const Contact = () => {
             type="submit"
             className="btn"
             disabled={isLoading}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
           >
             {isLoading ? "Sending..." : "Send Message"}
           </button>
