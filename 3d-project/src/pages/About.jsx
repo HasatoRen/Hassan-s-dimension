@@ -1,10 +1,9 @@
 import React from 'react'
+import { div } from 'three/src/nodes/math/OperatorNode.js'
 
 const About = () => {
   return (
-    <Section>
-      <h1>Hello world i am now in the about section</h1>
-    </Section>
+    <div>hello</div>
   )
 }
 
