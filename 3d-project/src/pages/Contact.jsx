@@ -1,21 +1,26 @@
-import React, { useRef, useState } from "react";
+import React, { Suspense, useRef, useState } from "react";
 import emailjs, { send } from "@emailjs/browser";
 import { Form } from "react-router-dom";
 import { error } from "three";
+import { Canvas } from "@react-three/fiber";
+
+import Fox from "../models/Fox";
+import Loader from "../components/Loader";
 
 const Contact = () => {
   const formRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [currentAnimation, setCurrentAnimation] = useState("idle");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-  const handleFocus = () => {};
-  const handleBlur = () => {};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setCurrentAnimation("hit");
 
     emailjs
       .send(
@@ -28,19 +33,25 @@ const Contact = () => {
           to_email: "mhassanarif25",
           message: form.message,
         },
-        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
-      ).then(() => {
+        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY,
+      )
+      .then(() => {
         setIsLoading(false);
         //Todo show succes message
         //Todo hide alert mesage
 
-        setForm({ name: '', email: '', message:'' })
-      }).catch((error) => {
+        setForm({ name: "", email: "", message: "" });
+      })
+      .catch((error) => {
         setIsLoading(false);
+        setCurrentAnimation("idle");
         console.log(error);
         //todo show error message
       });
   };
+
+  const handleFocus = () => setCurrentAnimation("walk");
+  const handleBlur = () => setCurrentAnimation("idle");
 
   return (
     <section className="relative flex lg:flex-row flex-col max-container">
@@ -103,6 +114,29 @@ const Contact = () => {
             {isLoading ? "Sending..." : "Send Message"}
           </button>
         </form>
+      </div>
+
+      <div className="lg:w-1/2 lg:h-auto md:h[550px] h[350px]">
+        <Canvas
+          camera={{
+            position: [0, 0, 5],
+            fov: 75,
+            near: 0.1,
+            far: 1000,
+          }}
+        >
+          <directionalLight intensity={2.5} position={[0, 0, 1]} />
+          <ambientLight intensity={0.5} />
+
+          <Suspense fallback={<Loader />}>
+            <Fox
+              currentAnimation={currentAnimation}
+              position={[0.5, 0.35, 0]}
+              rotation={[12.6, -0.6, 0]}
+              scale={[0.5, 0.5, 0.5]}
+            />
+          </Suspense>
+        </Canvas>
       </div>
     </section>
   );
