@@ -23,6 +23,12 @@ const Island = ({ isRotating, setisRotating, setCurrentStage, ...props }) => {
   const lastX = useRef(0);
   //use a ref for the rotation speed
   const rotationSpeed = useRef(0);
+
+  const keys = useRef({
+    left: false,
+    right: false,
+  });
+  const lastDirection = useRef(0); // for making the animation smooth it will remeber the last key pressed and use its momentum
   //making a damping factor so the rotation slow down smoothly
   const dampingFactor = 0.95;
 
@@ -60,24 +66,79 @@ const Island = ({ isRotating, setisRotating, setCurrentStage, ...props }) => {
       rotationSpeed.current = delta * 0.01 * Math.PI;
     }
   };
-  //handle keydown event
-  const handleKeyDown = (e) => {
-    if (e.key === "ArrowLeft") {
-      if (!isRotating) setisRotating(true);
-      islandRef.current.rotation.y += 0.01 * Math.PI;
-    } else if (e.key === "ArrowRight") {
-      if (!isRotating) setisRotating(true);
-      islandRef.current.rotation.y -= 0.01 * Math.PI;
-    }
-  };
-  //handle key up event
-  const handleKeyUp = (e) => {
-    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-      setisRotating(false);
-    }
-  };
+  // //handle keydown event
+  // const handleKeyDown = (e) => {
+  //   if (e.key === "ArrowLeft") {
+  //     if (!isRotating) setisRotating(true);
+  //     islandRef.current.rotation.y += 0.01 * Math.PI;
+  //     rotationSpeed.current = 0.0125;
+  //   } else if (e.key === "ArrowRight") {
+  //     if (!isRotating) setisRotating(true);
+  //     islandRef.current.rotation.y -= 0.01 * Math.PI;
+  //     rotationSpeed.current = -0.0125;
+  //   }
+  // };
+  // //handle key up event
+  // const handleKeyUp = (e) => {
+  //   if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+  //     setisRotating(false);
+  //   }
+  // };
 
   useEffect(() => {
+    //it will run when a keyboard key is pressed
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+
+        keys.current.left = true;
+        lastDirection.current = 1;
+
+        setisRotating(true);
+      }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+
+        keys.current.right = true;
+        lastDirection.current = -1;
+
+        setisRotating(true);
+      }
+    };
+
+    //it will run when the key is released
+    const handleKeyUp = (e) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+
+        keys.current.left = false;
+      }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+
+        keys.current.right = false;
+      }
+
+      //only stop the rotaion when both key is released
+      if (keys.current.left) {
+        lastDirection.current = 1;
+      } else if (keys.current.right) {
+        lastDirection.current = -1;
+      } else {
+        rotationSpeed.current = lastDirection.current * 0.0125;
+        setisRotating(false);
+      }
+    };
+
+    //now if the browser lose the focus meaning the user is on the other tab so the keys dont have to work
+    const handleBlur = () => {
+      keys.current.left = false;
+      keys.current.right = false;
+
+      rotationSpeed.current = 0;
+      setisRotating(false);
+    };
+
     // Add Event Listeners for pointers and keyboard events
     const canvas = gl.domElement;
     canvas.addEventListener("pointerup", handlePointerUp);
@@ -86,6 +147,8 @@ const Island = ({ isRotating, setisRotating, setCurrentStage, ...props }) => {
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
 
+    window.addEventListener("blur", handleBlur);
+
     return () => {
       // Remove Event Listeners when components Unmount
       canvas.removeEventListener("pointerdown", handlePointerDown);
@@ -93,22 +156,34 @@ const Island = ({ isRotating, setisRotating, setCurrentStage, ...props }) => {
       canvas.removeEventListener("pointermove", handlePointerMove);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
+
+      window.removeEventListener("blur", handleBlur);
     };
   }, [gl, handlePointerDown, handlePointerMove, handlePointerUp]);
 
   // this function is used for each frame update
-  useFrame(() => {
+  useFrame((_, delta) => {
+    //determining the direction of island
+    const direction = keys.current.left ? 1 : keys.current.right ? -1 : 0;
+
+    //if the arrow key is being pressed
+    if (direction != 0) {
+      islandRef.current.rotation.y += direction * 0.75 * delta;
+    }
+
     //if not rotating, apply damping to slowdown the rotation to make it smoothly
-    if (!isRotating) {
-      //applying the damping the factor
-      rotationSpeed.current *= dampingFactor;
+    else if (!isRotating) {
+      //applying the damping the factor and to make it consistent on all the devices
+      rotationSpeed.current *= Math.pow(dampingFactor, delta * 60);
       //when the speed is too slow just make it stop
       if (Math.abs(rotationSpeed.current) < 0.001) {
         rotationSpeed.current = 0;
       }
-      //storing the current rotation speed in island ref
-      islandRef.current.rotation.y += rotationSpeed.current;
-    } else {
+      //storing the current rotation speed in island ref and to make it consistent on all devices
+      islandRef.current.rotation.y += rotationSpeed.current * delta * 60;
+    } 
+    
+    if (isRotating || direction != 0) {
       //when rotating, detemine the current stage based on island orientation which is showing by island ref
       const rotation = islandRef.current.rotation.y;
       /**
